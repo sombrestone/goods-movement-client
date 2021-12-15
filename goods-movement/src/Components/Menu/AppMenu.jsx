@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext,useEffect, useState}  from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,13 +11,29 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import {Context} from '../../App';
+import {availableMenu} from '../../Navigation/Pages'
+import PopupState, {bindMenu, bindTrigger} from "material-ui-popup-state";
+import {Link} from "react-router-dom";
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+
+const pages = ['Справочники', 'Операции', 'Отчеты'];
 
 function AppMenu(props) {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const {user,setUser,UserFunc}=useContext(Context);
+
+
+    let settings=(user.isAuth)?
+        ['Профиль','Выход']
+        :
+        ['Войти','Зарегистрироваться'];
+
+    let menus=availableMenu(user.role);
+
+
+    const [anchorElNav, setAnchorElNav] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -43,7 +59,8 @@ function AppMenu(props) {
                         component="div"
                         sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
                     >
-                        LOGO
+                        Курсач
+
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -75,9 +92,9 @@ function AppMenu(props) {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
+                            {menus.map((menu) => (
+                                <MenuItem key={menu} onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center">{menu.name}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -91,14 +108,29 @@ function AppMenu(props) {
                         LOGO
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
+                        {menus.map((menu) => (
+                            <PopupState  popupId={menu.name}>
+                                {(popupState) => (
+                                    <React.Fragment>
+                                        <Button key={menu}
+                                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                                {...bindTrigger(popupState)}>
+                                            {menu.name}
+                                        </Button>
+                                        <Menu {...bindMenu(popupState)}>
+                                            {menu.submenus.map((submenu)=>(
+                                                <Link to={submenu.route} style={{textDecoration:'inherit', color: 'inherit'}}>
+                                                <MenuItem
+                                                    onClick={()=>popupState.close}
+                                                >
+                                                    {submenu.name}
+                                                </MenuItem>
+                                                </Link>
+                                            ))}
+                                        </Menu>
+                                    </React.Fragment>
+                                )}
+                            </PopupState>
                         ))}
                     </Box>
 
