@@ -1,27 +1,34 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
+import {Autocomplete, createFilterOptions, Grid, TextField} from "@mui/material";
 import CrudTable from "../../Components/CrudTable/CrudTable";
-import {Grid, TextField} from "@mui/material";
 
-
-const Unit = (props) => {
+const Products = (props) => {
 
     const {products,setProducts}=useContext(Context);
 
+    useEffect(()=> {
+        props.getUnit().then(unit => {
+            props.get().then(data => {
+                setProducts(s=>({unit: unit,products: data}));
+            });
+        });
+
+    },[products.v]);
+
     const emptyState={
-        id: null,
-        name: "",
-        shortName:"",
+            id: null,
+            name: "",
+            unitName: "",
+            unitShortName: "",
+            unitId: ""
     };
 
     const [state,setState]=
         useState(emptyState);
 
-    useEffect(()=> {
-        props.get().then(data => {
-            setProducts(s=>({...s,unit: data}));
-        });
-    },[products.v]);
+    let vars={unit:products.unit};
+
 
     const columns = [
         { field: 'num', headerName: '#', width: 90 },
@@ -32,22 +39,34 @@ const Unit = (props) => {
             editable: true,
         },
         {
-            field: 'shortName',
-            headerName: 'Сокращение',
+            field: 'unitName',
+            headerName: 'Единица измерения',
             width: 150,
             editable: true,
         }
     ];
 
+
     const Form =(props)=> {
+
         const [state]=props.state;
 
+
         const [name,setName]= useState({value: state.name});
-        const [shortName,setShortName]= useState({value: state.shortName});
+
+        const options=props.vars.unit.map(x=>({
+            label: x.name,
+            id: x.id,
+            shortName: x.shortName
+        }));
+
+        const [unit,setUnit]=
+            useState( options.find((x)=>(x.id==state.unitId)));
+
 
         useEffect(()=>{
             props.setTask(()=>{
-                props.event({id: state.id,name: name.value, shortName: shortName.value});
+                props.event({id: state.id,name: name.value, unitId: unit.id});
             });
         });
 
@@ -58,28 +77,33 @@ const Unit = (props) => {
                         fullWidth
                         margin="dense"
                         variant="outlined"
-                        label="Имя"
+                        label="Наименование"
                         id="name"
                         value={name.value}
                         onChange={(e)=>setName(s=>({...s,value:e.target.value}))}
                     />
                 </Grid>
                 <Grid item>
-                    <TextField
-                        fullWidth
-                        margin="dense"
-                        variant="outlined"
-                        label="Сокр. имя"
-                        id="shortName"
-                        value={shortName.value}
-                        onChange={(e)=>setShortName(s=>({...s,value:e.target.value}))}
+                    <Autocomplete
+                        value={unit===undefined?"":unit.label}
+                        onChange={(event, newValue) => {
+                            setUnit(newValue);
+                        }}
+                        id="controllable-states-demo"
+                        options={options}
+                        sx={{ width: 300 }}
+                        renderInput={(params) =>
+                            <TextField  fullWidth
+                                        margin="dense"
+                                        variant="outlined" {...params}
+                                        label="Ед. изм." />}
                     />
                 </Grid>
             </Grid>
         </Grid>)
     };
 
-    let rows=products.unit;
+    let rows=products.products;
 
     const storeUpdate=(func,arg)=>{
         func(arg);
@@ -93,13 +117,14 @@ const Unit = (props) => {
             form={Form}
             state={[state,setState]}
             emptyState={emptyState}
-            modalTitle={{add:"Добавление новой ед. изм.",
-                upd:"Редактирование ед. изм."}}
+            modalTitle={{add:"Добавление нового товара",
+                upd:"Редактирование товара"}}
             add={(arg)=>storeUpdate(props.add,arg)}
             remove={(arg)=>storeUpdate(props.delete,arg)}
             update={(arg)=>storeUpdate(props.update,arg)}
+            vars={vars}
         />
     );
 };
 
-export default Unit;
+export default Products;

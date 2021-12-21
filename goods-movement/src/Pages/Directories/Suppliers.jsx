@@ -1,27 +1,26 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
-import CrudTable from "../../Components/CrudTable/CrudTable";
 import {Grid, TextField} from "@mui/material";
+import CrudTable from "../../Components/CrudTable/CrudTable";
 
+const Suppliers = (props) => {
 
-const Unit = (props) => {
-
-    const {products,setProducts}=useContext(Context);
+    const {store,setStore}=useContext(Context);
 
     const emptyState={
         id: null,
         name: "",
-        shortName:"",
+        address:"",
+        unp: ""
     };
 
-    const [state,setState]=
-        useState(emptyState);
+    const [state,setState]= useState(emptyState);
 
     useEffect(()=> {
         props.get().then(data => {
-            setProducts(s=>({...s,unit: data}));
+            setStore(s=>({...s,suppliers: data}));
         });
-    },[products.v]);
+    },[store.v]);
 
     const columns = [
         { field: 'num', headerName: '#', width: 90 },
@@ -32,8 +31,14 @@ const Unit = (props) => {
             editable: true,
         },
         {
-            field: 'shortName',
-            headerName: 'Сокращение',
+            field: 'address',
+            headerName: 'Адрес',
+            width: 150,
+            editable: true,
+        },
+        {
+            field: 'unp',
+            headerName: 'УПН',
             width: 150,
             editable: true,
         }
@@ -43,13 +48,17 @@ const Unit = (props) => {
         const [state]=props.state;
 
         const [name,setName]= useState({value: state.name});
-        const [shortName,setShortName]= useState({value: state.shortName});
+        const [address,setAddress]= useState({value: state.address});
+        const [unp,setUnp]= useState({value: state.unp});
 
         useEffect(()=>{
             props.setTask(()=>{
-                props.event({id: state.id,name: name.value, shortName: shortName.value});
-            });
-        });
+                props.event({
+                    id: state.id,
+                    name: name.value,
+                    address: address.value,
+                    unp: unp.value
+                });});});
 
         return (<Grid>
             <Grid item>
@@ -69,21 +78,34 @@ const Unit = (props) => {
                         fullWidth
                         margin="dense"
                         variant="outlined"
-                        label="Сокр. имя"
-                        id="shortName"
-                        value={shortName.value}
-                        onChange={(e)=>setShortName(s=>({...s,value:e.target.value}))}
+                        label="Адрес"
+                        id="address"
+                        value={address.value}
+                        onChange={(e)=>setAddress(s=>({...s,value:e.target.value}))}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        fullWidth
+                        margin="dense"
+                        variant="outlined"
+                        label="УПН"
+                        id="unp"
+                        value={unp.value}
+                        onChange={(e)=>setUnp(s=>({...s,value:e.target.value}))}
                     />
                 </Grid>
             </Grid>
         </Grid>)
     };
 
-    let rows=products.unit;
+
+
+    let rows=store.suppliers;
 
     const storeUpdate=(func,arg)=>{
         func(arg);
-        setProducts(s=>({...s,v: products.v+1}));
+        setStore(s=>({...s,v: store.v+1}));
     }
 
     return (
@@ -93,8 +115,8 @@ const Unit = (props) => {
             form={Form}
             state={[state,setState]}
             emptyState={emptyState}
-            modalTitle={{add:"Добавление новой ед. изм.",
-                upd:"Редактирование ед. изм."}}
+            modalTitle={{add:"Добавление нового поставщика",
+                upd:"Редактирование поставщика"}}
             add={(arg)=>storeUpdate(props.add,arg)}
             remove={(arg)=>storeUpdate(props.delete,arg)}
             update={(arg)=>storeUpdate(props.update,arg)}
@@ -102,4 +124,4 @@ const Unit = (props) => {
     );
 };
 
-export default Unit;
+export default Suppliers;

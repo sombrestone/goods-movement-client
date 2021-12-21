@@ -23,7 +23,7 @@ const RoleName=(role)=> {
 const UserStore=()=>{
     return {
         isAuth: false,
-        role: Roles.EXPERT,
+        role: null,
         firstname: null,
         lastname: null,
         patronymic: null

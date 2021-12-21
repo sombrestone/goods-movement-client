@@ -4,6 +4,7 @@ const roles=UserFunc().Roles;
 
 export const routes=Object.freeze({
     SUBDIVISION: "/directory/subdivision",
+    SHOP: "/directory/shops",
     SUPPLIERS: "/directory/suppliers",
     NOMENCLATURE: "/directory/nomenclature",
     UNIT: "/directory/unit",
@@ -30,6 +31,11 @@ export const menus=[
                 name: 'Подразделения',
                 roles: [roles.ADMIN,roles.EXPERT,roles.MANAGER],
                 route: routes.SUBDIVISION
+            },
+            {
+                name: 'Магазины',
+                roles: [roles.ADMIN,roles.EXPERT,roles.MANAGER],
+                route: routes.SHOP
             },
             {
                 name: 'Поставщики',

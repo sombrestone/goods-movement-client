@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {Context} from '../../App';
-import {availableMenu} from '../../Navigation/Pages'
+import {availableMenu, routes} from '../../Navigation/Pages'
 import PopupState, {bindMenu, bindTrigger} from "material-ui-popup-state";
 import {Link} from "react-router-dom";
 
@@ -21,15 +21,37 @@ import {Link} from "react-router-dom";
 const pages = ['Справочники', 'Операции', 'Отчеты'];
 
 function AppMenu(props) {
-    const {user,setUser,UserFunc}=useContext(Context);
+    const {user, setUser, UserFunc} = useContext(Context);
 
 
-    let settings=(user.isAuth)?
-        ['Профиль','Выход']
+    let settings = (user.isAuth) ?
+        [
+            {
+                name: 'Профиль',
+                route: '/profile'
+            },
+            {
+                name: 'Выход',
+                route: '/',
+                onclick: ()=>(setUser({
+                    isAuth: false,
+                    role: null,
+                    firstname: null,
+                    lastname: null,
+                    patronymic: null
+                }))
+            },]
         :
-        ['Войти','Зарегистрироваться'];
+        [{
+                name: 'Войти',
+                route: '/login'
+            },
+            {
+                name: 'Зарегистрироваться',
+                route: '/registration'
+            }];
 
-    let menus=availableMenu(user.role);
+    let menus = availableMenu(user.role);
 
 
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -57,13 +79,13 @@ function AppMenu(props) {
                         variant="h6"
                         noWrap
                         component="div"
-                        sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+                        sx={{mr: 2, display: {xs: 'none', md: 'flex'}}}
                     >
                         Курсач
 
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -72,7 +94,7 @@ function AppMenu(props) {
                             onClick={handleOpenNavMenu}
                             color="inherit"
                         >
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -89,7 +111,7 @@ function AppMenu(props) {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: {xs: 'block', md: 'none'},
                             }}
                         >
                             {menus.map((menu) => (
@@ -103,28 +125,29 @@ function AppMenu(props) {
                         variant="h6"
                         noWrap
                         component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+                        sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}
                     >
                         LOGO
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
                         {menus.map((menu) => (
-                            <PopupState  popupId={menu.name}>
+                            <PopupState popupId={menu.name}>
                                 {(popupState) => (
                                     <React.Fragment>
                                         <Button key={menu}
-                                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                                sx={{my: 2, color: 'white', display: 'block'}}
                                                 {...bindTrigger(popupState)}>
                                             {menu.name}
                                         </Button>
                                         <Menu {...bindMenu(popupState)}>
-                                            {menu.submenus.map((submenu)=>(
-                                                <Link to={submenu.route} style={{textDecoration:'inherit', color: 'inherit'}}>
-                                                <MenuItem
-                                                    onClick={()=>popupState.close}
-                                                >
-                                                    {submenu.name}
-                                                </MenuItem>
+                                            {menu.submenus.map((submenu) => (
+                                                <Link to={submenu.route}
+                                                      style={{textDecoration: 'inherit', color: 'inherit'}}>
+                                                    <MenuItem
+                                                        onClick={() => popupState.close}
+                                                    >
+                                                        {submenu.name}
+                                                    </MenuItem>
                                                 </Link>
                                             ))}
                                         </Menu>
@@ -134,14 +157,14 @@ function AppMenu(props) {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{flexGrow: 0}}>
                         <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
                             </IconButton>
                         </Tooltip>
                         <Menu
-                            sx={{ mt: '45px' }}
+                            sx={{mt: '45px'}}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -157,9 +180,17 @@ function AppMenu(props) {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
+                                <Link to={setting.route}
+                                      style={{textDecoration: 'inherit', color: 'inherit'}}>
+                                    <MenuItem
+                                        key={setting}
+                                        onClick={(setting.onclick!=undefined)?
+                                            setting.onclick:
+                                            handleCloseNavMenu}
+                                    >
+                                        <Typography textAlign="center">{setting.name}</Typography>
+                                    </MenuItem>
+                                </Link>
                             ))}
                         </Menu>
                     </Box>

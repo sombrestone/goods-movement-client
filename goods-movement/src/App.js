@@ -1,47 +1,129 @@
 import AppMenu from './Components/Menu/AppMenu';
 import React, {createContext, useContext, useEffect, useState} from "react";
 import UserStore, {UserFunc} from "./Store/UserStore";
+import Store from './Store/index';
 import {availableRoutes,routes} from './Navigation/Pages'
 import Subdivision from "./Pages/Directories/Subdivision";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {ProductStore} from "./Store/ProductStore";
-import {getUnits} from "./Http/ProductApi";
+import {addProduct, addUnit, delProduct, delUnit, getProducts, getUnits, putProduct, putUnit} from "./Http/ProductApi";
 import Unit from "./Pages/Directories/Unit";
+import {
+    addShop, addSubdivision,
+    addSupplier,
+    addVat, delShop, delSubdivision,
+    delSupplier,
+    delVat,
+    getShops, getSubdivisions,
+    getSuppliers,
+    getVats, putShop, putSubdivision,
+    putSupplier,
+    putVat
+} from "./Http/StoreApi";
+import Suppliers from "./Pages/Directories/Suppliers";
+import Vat from "./Pages/Directories/Vat";
+import Login from './Pages/Login';
+import Registration from './Pages/Registration';
+import {check, login} from "./Http/UserApi";
+import Products from "./Pages/Directories/Products";
+import Shops from "./Pages/Directories/Shops";
+import GoodsArrival from "./Pages/Operations/GoodsArrival";
 
 export const Context = createContext(null);
 
 function App() {
     const [user, setUser] = useState(UserStore());
-    const [products,setProducts] = useState(ProductStore())
+    const [products,setProducts] = useState(ProductStore());
+    const [store,setStore]= useState(Store());
+
+    useEffect(() => {
+        check().then(data => {
+            setUser(data);
+        }).catch(x=>(setUser({
+            isAuth: false,
+            role: null,
+            firstname: null,
+            lastname: null,
+            patronymic: null
+        })));
+    }, []);
 
     let content = availableRoutes(user.role).map((content) => {
         switch (content.route) {
             case routes.SUBDIVISION:
-                return <Route path={routes.SUBDIVISION} element={<Subdivision/>}/>;
+                return <Route path={routes.SUBDIVISION} element=
+                    {<Subdivision
+                        get={getSubdivisions}
+                        add={addSubdivision}
+                        delete={delSubdivision}
+                        update={putSubdivision}
+                        getShops={getShops}
+                    />}/>;
             case routes.UNIT:
-                return <Route path={routes.UNIT} element={<Unit/>}/>;
+                return <Route path={routes.UNIT} element=
+                    {<Unit
+                        get={getUnits}
+                        add={addUnit}
+                        delete={delUnit}
+                        update={putUnit}
+                    />}/>;
+            case routes.SUPPLIERS:
+                return <Route path={routes.SUPPLIERS} element=
+                    {<Suppliers
+                        get={getSuppliers}
+                        add={addSupplier}
+                        delete={delSupplier}
+                        update={putSupplier}
+                    />}/>;
+            case routes.VAT:
+                return <Route path={routes.VAT} element=
+                    {<Vat
+                        get={getVats}
+                        add={addVat}
+                        delete={delVat}
+                        update={putVat}
+                    />}/>;
+            case routes.NOMENCLATURE:
+                return <Route path={routes.NOMENCLATURE} element=
+                    {<Products
+                        get={getProducts}
+                        add={addProduct}
+                        delete={delProduct}
+                        update={putProduct}
+                        getUnit={getUnits}
+                    />}/>;
+            case routes.SHOP:
+                return <Route path={routes.SHOP} element=
+                    {<Shops
+                        get={getShops}
+                        add={addShop}
+                        delete={delShop}
+                        update={putShop}
+                    />}/>;
+            case routes.GOODSARRIVAL:
+                return <Route path={routes.GOODSARRIVAL} element=
+                    {<GoodsArrival/>}/>;
         }
     }).filter((x) => x != null);
 
-    useEffect(()=>{
-        getUnits().then(data=>{
-            let newState={...products};
-            newState.units=data;
-            setProducts(newState);
 
-        });
-
-    });
+    if (!user.isAuth) {
+        content.push(<Route path={'/login'} element=
+            {<Login login={login}/>}/>);
+        content.push(<Route path={'/registration'} element=
+            {<Registration/>}/>);
+    }
 
     return (
         <div>
             <Context.Provider value={
-                //[user, setUser, UserFunc,products,setProducts]
                 {
                     user,
                     setUser,
                     products,
-                    setProducts
+                    setProducts,
+                    store,
+                    setStore
                 }
             }>
                     <AppMenu/>
