@@ -28,6 +28,9 @@ import {check, login} from "./Http/UserApi";
 import Products from "./Pages/Directories/Products";
 import Shops from "./Pages/Directories/Shops";
 import GoodsArrival from "./Pages/Operations/GoodsArrival";
+import {getSmartBalance, saveArrival, saveReturn, saveSale} from "./Http/Operations";
+import Sales from "./Pages/Operations/Sales";
+import Movement from "./Pages/Operations/Movement";
 
 export const Context = createContext(null);
 
@@ -102,7 +105,38 @@ function App() {
                     />}/>;
             case routes.GOODSARRIVAL:
                 return <Route path={routes.GOODSARRIVAL} element=
-                    {<GoodsArrival/>}/>;
+                    {<GoodsArrival
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                        getProducts={getProducts}
+                        getSuppliers={getSuppliers}
+                        getVats={getVats}
+                        saveArrival={saveArrival}
+                    />}/>;
+            case routes.SALES:
+                return <Route path={routes.SALES} element=
+                    {<Sales
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                        getSmartBalance={getSmartBalance}
+                        saveSale={saveSale}
+                    />}/>;
+            case routes.PURCHASERETURNS:
+                return <Route path={routes.PURCHASERETURNS} element=
+                    {<Sales
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                        getSmartBalance={getSmartBalance}
+                        saveSale={saveReturn}
+                    />}/>;
+            case routes.GOODSMOVEMENT:
+                return <Route path={routes.GOODSMOVEMENT} element=
+                    {<Movement
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                        getSmartBalance={getSmartBalance}
+                        saveSale={saveReturn}
+                    />}/>;
         }
     }).filter((x) => x != null);
 
