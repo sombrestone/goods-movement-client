@@ -28,9 +28,11 @@ import {check, login} from "./Http/UserApi";
 import Products from "./Pages/Directories/Products";
 import Shops from "./Pages/Directories/Shops";
 import GoodsArrival from "./Pages/Operations/GoodsArrival";
-import {getSmartBalance, saveArrival, saveReturn, saveSale} from "./Http/Operations";
+import {getBalance, getMovement, getSmartBalance, saveArrival, saveMove, saveReturn, saveSale} from "./Http/Operations";
 import Sales from "./Pages/Operations/Sales";
 import Movement from "./Pages/Operations/Movement";
+import Balance from "./Pages/Operations/Balance";
+import MovementReport from "./Pages/Operations/MovementReport";
 
 export const Context = createContext(null);
 
@@ -135,8 +137,23 @@ function App() {
                         getShops={getShops}
                         getDepartments={getSubdivisions}
                         getSmartBalance={getSmartBalance}
-                        saveSale={saveReturn}
+                        saveMove={saveMove}
                     />}/>;
+            case routes.BALANCESHEET:
+                return <Route path={routes.BALANCESHEET} element=
+                    {<Balance
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                        getBalance={getBalance}
+                    />}/>;
+            case routes.BILLOFMOVEMENT:
+                return <Route path={routes.BILLOFMOVEMENT} element=
+                    {<MovementReport
+                        getMovement={getMovement}
+                        getShops={getShops}
+                        getDepartments={getSubdivisions}
+                    />}/>;
+
         }
     }).filter((x) => x != null);
 

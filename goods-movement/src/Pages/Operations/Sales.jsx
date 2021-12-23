@@ -112,7 +112,8 @@ const Sales = (props) => {
                             props.saveSale(
                                 {
                                     consignmentId: selProduct.consignmentId,
-                                    number: number
+                                    number: number,
+                                    departmentId: selDepartment.id
                                 }
                             )
                         }}

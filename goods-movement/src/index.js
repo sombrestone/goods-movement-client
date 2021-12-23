@@ -5,10 +5,11 @@ import {BrowserRouter} from "react-router-dom";
 import App from './App';
 
 
-ReactDOM.render(
+import themes from 'devextreme/ui/themes';
+themes.initialized(() =>ReactDOM.render(
     <BrowserRouter>
           <App/>
     </BrowserRouter>,
   document.getElementById('root')
-);
+));
 
