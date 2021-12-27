@@ -40,7 +40,17 @@ const CrudTable = (props) => {
         update(arg);
     }
 
+    const localizedTextsMap = {
+        columnMenuUnsort: "Отменить сортировку",
+        columnMenuSortAsc: "Сортировка по возрастанию",
+        columnMenuSortDesc: "Сортировка по убыванию",
+        columnMenuFilter: "Фильтрация",
+        columnMenuHideColumn: "Скрыть стобец",
+        columnMenuShowColumns: "Показать столбец"
+    };
+
     return (
+
         <div style={{ height: 700, width: '100%'}}>
             <ButtonGroup
                 disableElevation variant="contained"
@@ -77,6 +87,7 @@ const CrudTable = (props) => {
                 }
             </ButtonGroup>
             <DataGrid
+                localeText={localizedTextsMap}
                 rows={rows}
                 columns={columns}
                 pageSize={20}

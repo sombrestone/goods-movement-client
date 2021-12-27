@@ -106,22 +106,20 @@ const Sales = (props) => {
                         onChange={(e)=>(setNumber(parseInt(e.target.value)))}
                     />
                 </Grid>
-                <Grid item>
-                    <Button
-                        onClick={()=>{
-                            props.saveSale(
-                                {
-                                    consignmentId: selProduct.consignmentId,
-                                    number: number,
-                                    departmentId: selDepartment.id
-                                }
-                            )
-                        }}
-                    >
-                        Сохранить
-                    </Button>
-                </Grid>
             </Grid>
+            <Button
+                onClick={()=>{
+                    props.saveSale(
+                        {
+                            consignmentId: selProduct.consignmentId,
+                            number: number,
+                            departmentId: selDepartment.id
+                        }
+                    )
+                }}
+            >
+                Сохранить
+            </Button>
         </Box>
     );
 };

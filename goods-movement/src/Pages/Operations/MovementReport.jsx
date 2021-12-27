@@ -47,7 +47,7 @@ const MovementReport = (props) => {
     const Product=(props)=>{
         return(
             <React.Fragment>
-                <Typography component="div">
+                <Typography component="div" >
                     Товары
                 </Typography>
                 <DataGrid

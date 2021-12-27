@@ -78,7 +78,7 @@ const GoodsArrival = (props) => {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
-                <Grid item xs={4}>
+
                     <Grid item>
                     <Autocomplete
                         onChange={
@@ -308,7 +308,6 @@ const GoodsArrival = (props) => {
                         </Button>
                     </Grid>
                 </Grid>
-            </Grid>
         </Box>
     );
 };
