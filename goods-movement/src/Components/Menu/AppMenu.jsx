@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {Context} from '../../App';
-import {availableMenu, routes} from '../../Navigation/Pages'
+import {availableMenu, availableRoutes, routes} from '../../Navigation/Pages'
 import PopupState, {bindMenu, bindTrigger} from "material-ui-popup-state";
 import {Link} from "react-router-dom";
 
@@ -26,32 +26,37 @@ function AppMenu(props) {
 
     let settings = (user.isAuth) ?
         [
-            {
+            /*{
                 name: 'Профиль',
                 route: '/profile'
-            },
+            },*/
             {
                 name: 'Выход',
                 route: '/',
-                onclick: ()=>(setUser({
+                onclick: ()=>{
+                    setUser({
                     isAuth: false,
                     role: null,
                     firstname: null,
                     lastname: null,
                     patronymic: null
-                }))
+                });
+                    localStorage.removeItem('token');
+                }
+
             },]
         :
         [{
                 name: 'Войти',
                 route: '/login'
             },
-            {
+            /*{
                 name: 'Зарегистрироваться',
                 route: '/registration'
-            }];
+            }*/];
 
     let menus = availableMenu(user.role);
+    let mobMenus=availableRoutes(user.role);
 
 
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -114,20 +119,24 @@ function AppMenu(props) {
                                 display: {xs: 'block', md: 'none'},
                             }}
                         >
-                            {menus.map((menu) => (
+                            {mobMenus.map((menu) => (
+                                <Link to={menu.route}
+                                      style={{textDecoration: 'inherit', color: 'inherit'}}>
                                 <MenuItem key={menu} onClick={handleCloseNavMenu}>
                                     <Typography textAlign="center">{menu.name}</Typography>
                                 </MenuItem>
+                                </Link>
                             ))}
                         </Menu>
                     </Box>
+
                     <Typography
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}
                     >
-                        LOGO
+                        КП Журавский
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
                         {menus.map((menu) => (

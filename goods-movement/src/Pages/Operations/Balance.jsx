@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Autocomplete, Box, Grid, TextField} from "@mui/material";
+import {Autocomplete, Box, Grid, TextField, Typography} from "@mui/material";
 import DataGrid, {Column, MasterDetail} from 'devextreme-react/data-grid';
 
 const Balance = (props) => {
@@ -46,7 +46,10 @@ const Balance = (props) => {
                 >
                     <Column dataField="productName" caption={"Наименование"}/>
                     <Column dataField="supplierName" caption={"Поставщик"}/>
-                    <Column dataField="price" caption={"Цена розн."} dataType={"money"}/>
+                    <Column dataField="price" caption={"Цена розн."} format={{
+                        type: "fixedPoint",
+                        precision: 2
+                    }}  />
                     <Column dataField="number" caption={"Остаток"}/>
                 </DataGrid>
             </React.Fragment>
@@ -57,6 +60,9 @@ const Balance = (props) => {
 
     return (
         <Box sx={{flexGrow: 1}}>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Ведомость остатков
+            </Typography>
             <Grid container >
                 <Grid sx={12}>
 

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Autocomplete, Box, Button, Grid, TextField} from "@mui/material";
+import {Autocomplete, Box, Button, Grid, TextField, Typography} from "@mui/material";
+import {toast, ToastContainer} from "react-toastify";
 
 
 
@@ -53,6 +54,9 @@ const Movement = (props) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Перемещение товара
+            </Typography>
             <Grid container spacing={2}>
                 <Grid item>
                     <Autocomplete
@@ -157,20 +161,28 @@ const Movement = (props) => {
                 <Grid item>
                     <Button
                         onClick={()=>{
-                            saveMove(
-                                {
-                                    consignmentId: selProduct.consignmentId,
-                                    number: number,
-                                    fromDepId: selDepartment.id,
-                                    toDepId: selToDepartment.id
-                                }
-                            )
+                            try {
+                                saveMove(
+                                    {
+                                        consignmentId: selProduct?.consignmentId,
+                                        number: number,
+                                        fromDepId: selDepartment?.id,
+                                        toDepId: selToDepartment?.id
+                                    }
+                                ).then(s =>
+                                    (toast.success("Перемещение прошло успешно"))
+                                ).catch(e => (toast.error("Ошибка")));
+                            }
+                            catch (e) {
+                                toast.error("Ошибка");
+                            }
                         }}
                     >
                         Сохранить
                     </Button>
                 </Grid>
             </Grid>
+            <ToastContainer />
         </Box>
     );
 };

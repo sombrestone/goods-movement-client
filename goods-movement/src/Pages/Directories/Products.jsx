@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
-import {Autocomplete, createFilterOptions, Grid, TextField} from "@mui/material";
+import {Autocomplete, createFilterOptions, Grid, TextField, Typography} from "@mui/material";
 import CrudTable from "../../Components/CrudTable/CrudTable";
+import {toast} from "react-toastify";
 
 const Products = (props) => {
 
@@ -106,11 +107,21 @@ const Products = (props) => {
     let rows=products.products;
 
     const storeUpdate=(func,arg)=>{
-        func(arg);
-        setProducts(s=>({...s,v: products.v+1}));
+        try {
+            func(arg)
+                .then(() => (setProducts(s => ({...s, v: products.v + 1}))))
+                .catch(e => (toast.error("Ошибка")));;
+        }
+        catch (e) {
+            toast.error("Ошибка");
+        }
     }
 
     return (
+        <div>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Справочник номенклатуры
+            </Typography>
         <CrudTable
             columns={columns}
             rows={rows}
@@ -124,6 +135,7 @@ const Products = (props) => {
             update={(arg)=>storeUpdate(props.update,arg)}
             vars={vars}
         />
+        </div>
     );
 };
 

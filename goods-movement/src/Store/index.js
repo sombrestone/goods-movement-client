@@ -4,7 +4,8 @@ const Store=()=>{
         vats: null,
         suppliers: null,
         shops: null,
-        departments: null
+        departments: null,
+        workers: null
     }
 }
 

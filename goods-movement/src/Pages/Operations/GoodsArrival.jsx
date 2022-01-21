@@ -2,84 +2,87 @@ import React, {useEffect, useState} from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import {Autocomplete, Button, TextField} from "@mui/material";
+import {Autocomplete, Button, TextField, Typography} from "@mui/material";
+import {toast, ToastContainer} from "react-toastify";
 
 
 const GoodsArrival = (props) => {
 
-    const {getShops,getDepartments,getProducts, getSuppliers, getVats}=props;
+    const {getShops, getDepartments, getProducts, getSuppliers, getVats} = props;
 
-    const [shops,setShops]=useState([]);
-    const [selShop,setSelShop]=useState(null);
+    const [shops, setShops] = useState([]);
+    const [selShop, setSelShop] = useState(null);
 
-    useEffect(()=> {
+    useEffect(() => {
         getShops().then(data => {
-            setShops(data.map(x=>({...x,label: x.address})));
+            setShops(data.map(x => ({...x, label: x.address})));
         });
-    },[]);
+    }, []);
 
-    const [departments,setDepartments]=useState([]);
-    const [selDepartment,setSelDepartment]=useState(null);
+    const [departments, setDepartments] = useState([]);
+    const [selDepartment, setSelDepartment] = useState(null);
 
-    useEffect(()=> {
+    useEffect(() => {
         getDepartments(selShop?.id).then(data => {
-            setDepartments(data.map(x=>({...x,label: x.name})));
+            setDepartments(data.map(x => ({...x, label: x.name})));
         });
-    },[selShop?.id]);
+    }, [selShop?.id]);
 
-    const [products,setProducts]=useState([]);
-    const [selProduct,setSelProduct]=useState(null);
+    const [products, setProducts] = useState([]);
+    const [selProduct, setSelProduct] = useState(null);
 
-    useEffect(()=> {
+    useEffect(() => {
         getProducts().then(data => {
-            setProducts(data.map(x=>({...x,label: x.name})));
+            setProducts(data.map(x => ({...x, label: x.name})));
         });
-    },[]);
+    }, []);
 
-    const [suppliers,setSuppliers]=useState([]);
-    const [selSupplier,setSelSupplier]=useState(null);
+    const [suppliers, setSuppliers] = useState([]);
+    const [selSupplier, setSelSupplier] = useState(null);
 
-    useEffect(()=> {
+    useEffect(() => {
         getSuppliers().then(data => {
-            setSuppliers(data.map(x=>({...x,label: x.name})));
+            setSuppliers(data.map(x => ({...x, label: x.name})));
         });
-    },[]);
+    }, []);
 
-    const [vats,setVats]=useState([]);
-    const [selVat,setSelVat]=useState(null);
+    const [vats, setVats] = useState([]);
+    const [selVat, setSelVat] = useState(null);
 
 
-
-    useEffect(()=> {
+    useEffect(() => {
         getVats().then(data => {
-            setVats(data.map(x=>({...x,label: x.percent})));
+            setVats(data.map(x => ({...x, label: x.percent})));
         });
-    },[]);
+    }, []);
 
-    const [supplierPrice,setSupplierPrice]=useState(0.0);
+    const [supplierPrice, setSupplierPrice] = useState(0.0);
 
 
+    const supplierVat = (selVat != null) ? (selVat.percent / 100) * supplierPrice : 0.0;
 
-    const supplierVat=(selVat!=null)?(selVat.percent/100)*supplierPrice:0.0;
+    const supplierSum = supplierVat + parseFloat(supplierPrice);
 
-    const supplierSum=supplierVat+parseFloat(supplierPrice);
+    const [number, setNumber] = useState(0);
 
-    const [number,setNumber]=useState(0);
+    const [markup, setMarkup] = useState(0.0);
+    const [markupPercent, setMarkupPercent] = useState(0.0);
 
-    const [markup,setMarkup]=useState(0.0);
-    const [markupPercent,setMarkupPercent]=useState(0.0);
+    const vatSum = (selVat != null) ? supplierVat + (selVat.percent / 100) * markup : 0.0;
+    const priceSum = vatSum + supplierPrice + markup;
 
-    const vatSum=(selVat!=null)?supplierVat+(selVat.percent/100)*markup:0.0;
-    const priceSum=vatSum+parseFloat(supplierPrice)+parseFloat(markup);
+    const result = number * priceSum;
 
-    const result=number*priceSum;
-
+    const format = (s) => (+parseFloat(s).toFixed(2));
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{flexGrow: 1}}>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Поступление товара
+            </Typography>
             <Grid container spacing={2}>
 
-                    <Grid item>
+                <Grid item>
                     <Autocomplete
                         onChange={
                             (event, newValue) => {
@@ -88,205 +91,206 @@ const GoodsArrival = (props) => {
                         }
                         id="controllable-states-demo"
                         options={shops}
-                        sx={{ width: 300 }}
+                        sx={{width: 300}}
                         renderInput={(params) =>
-                            <TextField  fullWidth
-                                        margin="dense"
-                                        variant="outlined" {...params}
-                                        label="Магазин" />}
+                            <TextField fullWidth
+                                       margin="dense"
+                                       variant="outlined" {...params}
+                                       label="Магазин"/>}
                     />
-                    </Grid>
-                    <Grid item>
-                        <Autocomplete
-                            onChange={
-                                (event, newValue) => {
-                                    setSelDepartment(newValue);
-                                }
-                            }
-                            id="controllable-states-demo"
-                            options={departments}
-                            sx={{ width: 300 }}
-                            renderInput={(params) =>
-                                <TextField  fullWidth
-                                            margin="dense"
-                                            variant="outlined" {...params}
-                                            label="Отделение" />}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <Autocomplete
-                            onChange={
-                                (event, newValue) => {
-                                    setSelProduct(newValue);
-                                }
-                            }
-                            id="controllable-states-demo"
-                            options={products}
-                            sx={{ width: 300 }}
-                            renderInput={(params) =>
-                                <TextField  fullWidth
-                                            margin="dense"
-                                            variant="outlined" {...params}
-                                            label="Товар" />}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <Autocomplete
-                            onChange={
-                                (event, newValue) => {
-                                    setSelSupplier(newValue);
-                                }
-                            }
-                            id="controllable-states-demo"
-                            options={suppliers}
-                            sx={{ width: 300 }}
-                            renderInput={(params) =>
-                                <TextField  fullWidth
-                                            margin="dense"
-                                            variant="outlined" {...params}
-                                            label="Поставщик" />}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Цена поставщика"
-                            id="percent"
-                            type="number"
-                            value={supplierPrice.toFixed(2)}
-                            onChange={(e)=>(setSupplierPrice(parseFloat(e.target.value)))}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <Autocomplete
-                            onChange={
-                                (event, newValue) => {
-                                    setSelVat(newValue);
-                                }
-                            }
-                            id="controllable-states-demo"
-                            options={vats}
-                            sx={{ width: 300 }}
-                            renderInput={(params) =>
-                                <TextField  fullWidth
-                                            margin="dense"
-                                            variant="outlined" {...params}
-                                            label="Ставка НДС" />}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            disabled
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="НДС поставщика"
-                            id="percent"
-                            type="number"
-                            value={supplierVat.toFixed(2)}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            disabled
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Цена поставщика с НДС"
-                            id="percent"
-                            type="number"
-                            value={supplierSum.toFixed(2)}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Процент Наценки"
-                            id="percent"
-                            type="number"
-                            value={markupPercent.toFixed(2)}
-                            onChange={
-                                (e)=>{
-                                    setMarkupPercent(parseFloat(e.target.value));
-                                    setMarkup((parseFloat(e.target.value)/100)*
-                                        parseFloat(supplierPrice))
-                                }
-                            }
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Наценка Руб."
-                            id="percent"
-                            type="number"
-                            value={markup.toFixed(2)}
-                            onChange={(e)=>{
-                                setMarkup(parseFloat(e.target.value));
-                                setMarkupPercent((parseFloat(e.target.value))
-                                    /parseFloat(supplierPrice)*100);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            disabled
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="НДС розничный"
-                            id="percent"
-                            type="number"
-                            value={vatSum.toFixed(2)}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            disabled
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Цена розничная"
-                            id="percent"
-                            type="number"
-                            value={priceSum.toFixed(2)}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Количество"
-                            id="percent"
-                            type="number"
-                            value={number}
-                            onChange={(e)=>(setNumber(parseInt(e.target.value)))}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <TextField
-                            disabled
-                            sx={{ width: 300 }}
-                            margin="dense"
-                            variant="outlined"
-                            label="Сумма розничная"
-                            id="percent"
-                            type="number"
-                            value={result.toFixed(2)}
-                        />
-                    </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <Grid item>
-                        <Button
-                            onClick={()=>{
+                <Grid item>
+                    <Autocomplete
+                        onChange={
+                            (event, newValue) => {
+                                setSelDepartment(newValue);
+                            }
+                        }
+                        id="controllable-states-demo"
+                        options={departments}
+                        sx={{width: 300}}
+                        renderInput={(params) =>
+                            <TextField fullWidth
+                                       margin="dense"
+                                       variant="outlined" {...params}
+                                       label="Отделение"/>}
+                    />
+                </Grid>
+                <Grid item>
+                    <Autocomplete
+                        onChange={
+                            (event, newValue) => {
+                                setSelProduct(newValue);
+                            }
+                        }
+                        id="controllable-states-demo"
+                        options={products}
+                        sx={{width: 300}}
+                        renderInput={(params) =>
+                            <TextField fullWidth
+                                       margin="dense"
+                                       variant="outlined" {...params}
+                                       label="Товар"/>}
+                    />
+                </Grid>
+                <Grid item>
+                    <Autocomplete
+                        onChange={
+                            (event, newValue) => {
+                                setSelSupplier(newValue);
+                            }
+                        }
+                        id="controllable-states-demo"
+                        options={suppliers}
+                        sx={{width: 300}}
+                        renderInput={(params) =>
+                            <TextField fullWidth
+                                       margin="dense"
+                                       variant="outlined" {...params}
+                                       label="Поставщик"/>}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Цена поставщика"
+                        id="percent"
+                        type="number"
+                        value={supplierPrice.toFixed(2)}
+                        onChange={(e) => (setSupplierPrice(format(e.target.value)))}
+                    />
+                </Grid>
+                <Grid item>
+                    <Autocomplete
+                        onChange={
+                            (event, newValue) => {
+                                setSelVat(newValue);
+                            }
+                        }
+                        id="controllable-states-demo"
+                        options={vats}
+                        sx={{width: 300}}
+                        renderInput={(params) =>
+                            <TextField fullWidth
+                                       margin="dense"
+                                       variant="outlined" {...params}
+                                       label="Ставка НДС"/>}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        disabled
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="НДС поставщика"
+                        id="percent"
+                        type="number"
+                        value={supplierVat.toFixed(2)}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        disabled
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Цена поставщика с НДС"
+                        id="percent"
+                        type="number"
+                        value={supplierSum.toFixed(2)}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Процент Наценки"
+                        id="percent"
+                        type="number"
+                        value={markupPercent.toFixed(2)}
+                        onChange={
+                            (e) => {
+                                setMarkupPercent(format(e.target.value));
+                                setMarkup(format((parseFloat(e.target.value) / 100) *
+                                    parseFloat(supplierPrice)))
+                            }
+                        }
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Наценка Руб."
+                        id="percent"
+                        type="number"
+                        value={markup.toFixed(2)}
+                        onChange={(e) => {
+                            setMarkup(format(e.target.value));
+                            setMarkupPercent(format((parseFloat(e.target.value))
+                                / parseFloat(supplierPrice) * 100));
+                        }}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        disabled
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="НДС розничный"
+                        id="percent"
+                        type="number"
+                        value={vatSum.toFixed(2)}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        disabled
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Цена розничная"
+                        id="percent"
+                        type="number"
+                        value={priceSum.toFixed(2)}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Количество"
+                        id="percent"
+                        type="number"
+                        value={number}
+                        onChange={(e) => (setNumber(parseInt(e.target.value)))}
+                    />
+                </Grid>
+                <Grid item>
+                    <TextField
+                        disabled
+                        sx={{width: 300}}
+                        margin="dense"
+                        variant="outlined"
+                        label="Сумма розничная"
+                        id="percent"
+                        type="number"
+                        value={result.toFixed(2)}
+                    />
+                </Grid>
+            </Grid>
+            <Grid item xs={8}>
+                <Grid item>
+                    <Button
+                        onClick={() => {
+                            try {
                                 props.saveArrival(
                                     {
                                         departmentId: selDepartment.id,
@@ -301,13 +305,20 @@ const GoodsArrival = (props) => {
                                         price: priceSum,
                                         number
                                     }
-                                )
-                            }}
-                        >
-                            Сохранить
-                        </Button>
-                    </Grid>
+                                ).then(s =>
+                                    (toast.success("Поступление успешно сохранено"))
+                                ).catch(e => (toast.error("Ошибка")));
+                            } catch (e) {
+                                toast.error("Ошибка")
+                            }
+                        }
+                        }
+                    >
+                        Сохранить
+                    </Button>
                 </Grid>
+            </Grid>
+            <ToastContainer/>
         </Box>
     );
 };

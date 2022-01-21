@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Autocomplete, Box, Button, Grid, TextField} from "@mui/material";
+import {Autocomplete, Box, Button, Grid, TextField, Typography} from "@mui/material";
+import {toast} from "react-toastify";
 
 const Sales = (props) => {
 
@@ -41,6 +42,9 @@ const Sales = (props) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                {props.title}
+            </Typography>
             <Grid container spacing={2}>
                 <Grid item>
                     <Autocomplete
@@ -109,13 +113,20 @@ const Sales = (props) => {
             </Grid>
             <Button
                 onClick={()=>{
-                    props.saveSale(
-                        {
-                            consignmentId: selProduct.consignmentId,
-                            number: number,
-                            departmentId: selDepartment.id
-                        }
-                    )
+                    try {
+                        props.saveSale(
+                            {
+                                consignmentId: selProduct.consignmentId,
+                                number: number,
+                                departmentId: selDepartment.id
+                            }
+                        ).then(s =>
+                            (toast.success("Продажа прошла успешно"))
+                        ).catch(e => (toast.error("Ошибка")));
+                    }
+                    catch (e) {
+                        toast.error("Ошибка");
+                    }
                 }}
             >
                 Сохранить

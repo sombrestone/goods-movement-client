@@ -3,6 +3,7 @@ import {DataGrid} from "@mui/x-data-grid";
 import {Button, ButtonGroup} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddModal from "./AddModal";
+import {ToastContainer} from "react-toastify";
 
 const CrudTable = (props) => {
     const {columns,rows,add,remove,update}=props;
@@ -51,7 +52,7 @@ const CrudTable = (props) => {
 
     return (
 
-        <div style={{ height: 700, width: '100%'}}>
+        <div style={{ height: 600, width: '100%'}}>
             <ButtonGroup
                 disableElevation variant="contained"
             >
@@ -114,6 +115,7 @@ const CrudTable = (props) => {
                 mode={addMode}
                 vars={props.vars}
             />
+            <ToastContainer/>
         </div>
     );
 };

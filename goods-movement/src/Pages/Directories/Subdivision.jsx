@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
-import {Autocomplete, Grid, TextField} from "@mui/material";
+import {Autocomplete, Grid, TextField, Typography} from "@mui/material";
 import CrudTable from "../../Components/CrudTable/CrudTable";
+import {toast} from "react-toastify";
 
 const Subdivision = (props) => {
 
@@ -23,7 +24,7 @@ const Subdivision = (props) => {
         props.getShops().then(shop => {
             setShops(shop);
         });
-    },[]);
+    },[store.v]);
 
 
     const columns = [
@@ -47,8 +48,14 @@ const Subdivision = (props) => {
     const [selectedShop,setSelectedShop]=useState('');
 
     const storeUpdate=(func,arg)=>{
-        func(arg);
-        setStore(s=>({...s,v: store.v+1}));
+
+        try {
+            func(arg).then(()=>(setStore(s=>({...s,v: store.v+1}))))
+                .catch(e => (toast.error("Ошибка")));;
+        }
+        catch (e) {
+            toast.error("Ошибка");
+        }
     }
 
     const Form =(props)=> {
@@ -88,11 +95,14 @@ const Subdivision = (props) => {
         props.get(selectedShop.id).then(data => {
             setRows(data);
         });
-    },[selectedShop,state]);
+    },[selectedShop,store.v]);
 
 
     return (
-        <div style={{ height: 800, width: '100%'}}>
+        <div>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Справочник отделов
+            </Typography>
             <Autocomplete
                 value={selectedShop===undefined || selectedShop===null ?"":selectedShop.label}
                 onChange={(event, newValue) => {

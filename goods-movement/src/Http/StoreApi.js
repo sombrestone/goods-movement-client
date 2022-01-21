@@ -106,3 +106,33 @@ export const putSubdivision=async(vat)=>{
     const {data} = await $authHost.put('api/Department', vat);
     return data;
 }
+
+
+export const getWorkers= async () => {
+    const {data} = await $host.get('api/User');
+    let result=[];
+    if (Array.isArray(data)) {
+        data?.map(el => result.push({
+            id: el.id,
+            login:el.login,
+            password:el.password,
+            firstname:el.firstname,
+            lastname:el.lastname,
+            patronymic:el.patronymic,
+            roleName:el.roleName,
+            roleId:el.roleId
+        }));
+    }
+    return result;
+}
+
+export const addWorker= async (vat) => {
+    const {data} = await $host.post('api/User/registration',vat);
+    return data;
+}
+
+export const delWorker=async(id)=>{
+    const {data} = await $authHost.delete('api/User/'+id);
+    return data;
+}
+

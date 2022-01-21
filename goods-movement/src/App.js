@@ -4,19 +4,19 @@ import UserStore, {UserFunc} from "./Store/UserStore";
 import Store from './Store/index';
 import {availableRoutes,routes} from './Navigation/Pages'
 import Subdivision from "./Pages/Directories/Subdivision";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import {ProductStore} from "./Store/ProductStore";
 import {addProduct, addUnit, delProduct, delUnit, getProducts, getUnits, putProduct, putUnit} from "./Http/ProductApi";
 import Unit from "./Pages/Directories/Unit";
 import {
     addShop, addSubdivision,
     addSupplier,
-    addVat, delShop, delSubdivision,
+    addVat, addWorker, delShop, delSubdivision,
     delSupplier,
-    delVat,
+    delVat, delWorker,
     getShops, getSubdivisions,
     getSuppliers,
-    getVats, putShop, putSubdivision,
+    getVats, getWorkers, putShop, putSubdivision,
     putSupplier,
     putVat
 } from "./Http/StoreApi";
@@ -33,6 +33,8 @@ import Sales from "./Pages/Operations/Sales";
 import Movement from "./Pages/Operations/Movement";
 import Balance from "./Pages/Operations/Balance";
 import MovementReport from "./Pages/Operations/MovementReport";
+import "react-toastify/dist/ReactToastify.css";
+import Workers from "./Pages/Directories/Workers";
 
 export const Context = createContext(null);
 
@@ -122,6 +124,7 @@ function App() {
                         getDepartments={getSubdivisions}
                         getSmartBalance={getSmartBalance}
                         saveSale={saveSale}
+                        title={'Продажа товара'}
                     />}/>;
             case routes.PURCHASERETURNS:
                 return <Route path={routes.PURCHASERETURNS} element=
@@ -130,6 +133,7 @@ function App() {
                         getDepartments={getSubdivisions}
                         getSmartBalance={getSmartBalance}
                         saveSale={saveReturn}
+                        title={'Возврат товара'}
                     />}/>;
             case routes.GOODSMOVEMENT:
                 return <Route path={routes.GOODSMOVEMENT} element=
@@ -153,10 +157,19 @@ function App() {
                         getShops={getShops}
                         getDepartments={getSubdivisions}
                     />}/>;
-
+            case routes.EMPLOYEES:
+                return <Route path={routes.EMPLOYEES} element=
+                    {<Workers
+                        get={getWorkers}
+                        add={addWorker}
+                        delete={delWorker}
+                        update={putShop}
+                    />}/>;
         }
     }).filter((x) => x != null);
 
+
+    const navigate = useNavigate;
 
     if (!user.isAuth) {
         content.push(<Route path={'/login'} element=
@@ -180,7 +193,9 @@ function App() {
                     <AppMenu/>
                     <Routes>
                         {content}
+
                     </Routes>
+                {(!user.isAuth)?<Login login={login}/>:""}
             </Context.Provider>
         </div>
     );

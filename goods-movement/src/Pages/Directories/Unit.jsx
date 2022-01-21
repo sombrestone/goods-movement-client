@@ -1,12 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
 import CrudTable from "../../Components/CrudTable/CrudTable";
-import {Grid, TextField} from "@mui/material";
+import {Grid, TextField, Typography} from "@mui/material";
+import {toast} from "react-toastify";
 
 
 const Unit = (props) => {
 
     const {products,setProducts}=useContext(Context);
+
+    useEffect(()=> {
+        props.get().then(data => {
+            setProducts(s=>({...s,units: data}));
+        });
+    },[products.v]);
 
     const emptyState={
         id: null,
@@ -17,11 +24,6 @@ const Unit = (props) => {
     const [state,setState]=
         useState(emptyState);
 
-    useEffect(()=> {
-        props.get().then(data => {
-            setProducts(s=>({...s,unit: data}));
-        });
-    },[products.v]);
 
     const columns = [
         { field: 'num', headerName: '#', width: 90 },
@@ -79,14 +81,24 @@ const Unit = (props) => {
         </Grid>)
     };
 
-    let rows=products.unit;
+    let rows=products.units;
 
     const storeUpdate=(func,arg)=>{
-        func(arg);
-        setProducts(s=>({...s,v: products.v+1}));
+        try {
+            func(arg)
+                .then(() => (setProducts(s => ({...s, v: products.v + 1}))))
+                .catch(e => (toast.error("Ошибка")));;
+        }
+        catch (e) {
+            toast.error("Ошибка");
+        }
     }
 
     return (
+        <div>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Справочник единиц измерения
+            </Typography>
         <CrudTable
             columns={columns}
             rows={rows}
@@ -99,6 +111,7 @@ const Unit = (props) => {
             remove={(arg)=>storeUpdate(props.delete,arg)}
             update={(arg)=>storeUpdate(props.update,arg)}
         />
+        </div>
     );
 };
 

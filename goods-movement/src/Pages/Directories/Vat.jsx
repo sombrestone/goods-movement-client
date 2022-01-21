@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../App";
-import {Grid, TextField} from "@mui/material";
+import {Grid, TextField, Typography} from "@mui/material";
 import CrudTable from "../../Components/CrudTable/CrudTable";
+import {toast} from "react-toastify";
 
 const Vat = (props) => {
 
@@ -62,12 +63,22 @@ const Vat = (props) => {
     let rows=store.vats;
 
     const storeUpdate=(func,arg)=>{
-        func(arg);
-        setStore(s=>({...s,v: store.v+1}));
+
+        try {
+            func(arg).then(()=>(setStore(s=>({...s,v: store.v+1}))))
+                .catch(e => (toast.error("Ошибка")));;
+        }
+        catch (e) {
+            toast.error("Ошибка");
+        }
     }
 
 
     return (
+        <div>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Справочник ставок НДС
+            </Typography>
         <CrudTable
             columns={columns}
             rows={rows}
@@ -80,6 +91,7 @@ const Vat = (props) => {
             remove={(arg)=>storeUpdate(props.delete,arg)}
             update={(arg)=>storeUpdate(props.update,arg)}
         />
+        </div>
     );
 };
 

@@ -80,7 +80,10 @@ const MovementReport = (props) => {
                     keyExpr="consignmentId"
                 >
                     <Column dataField="docNumber" caption={"Номер документа"}/>
-                    <Column dataField="price" caption={"Розн. цена"}/>
+                    <Column dataField="price" caption={"Розн. цена"}format={{
+                        type: "fixedPoint",
+                        precision: 2
+                    }} />
                     <Column dataField="endRemainder" caption={"Остаток"}/>
                     <MasterDetail
                         enabled={true}
@@ -115,9 +118,12 @@ const MovementReport = (props) => {
 
     return (
         <Box sx={{flexGrow: 1}}>
+            <Typography variant="h4" component="div" gutterBottom margin={"1vw"}>
+                Ведомость движения
+            </Typography>
             <Grid container>
                 <Grid sx={12}>
-                    <Grid item>
+                    {/*<Grid item>
                         <LocalizationProvider dateAdapter={AdapterDateFns} locale={ruLocale}>
                             <DatePicker
                                 label="Начало периода"
@@ -136,7 +142,7 @@ const MovementReport = (props) => {
                                 renderInput={(params) => <TextField {...params} />}
                             />
                         </LocalizationProvider>
-                    </Grid>
+                    </Grid>*/}
                     <Grid item>
                         <Autocomplete
                             onChange={
